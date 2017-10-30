@@ -16,9 +16,8 @@ const mapDispatchToProps = (dispatch) => {
 
 class PostsPage extends Component{
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.postActions.fetchAll();
-    this.props.categoriesActions.fetchAll();
   }
 
   handlePostVote = (postId, voteOption) => {
