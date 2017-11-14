@@ -14,11 +14,14 @@ class Post extends React.Component {
 
   render () {
     const { post } = this.props
+    const creationDate = new Date()
+    creationDate.setTime(post.timestamp)
     return (
       <Card>
         <Card.Content>
-          <Card.Header>{post.title}</Card.Header>
+          <Card.Header><Link to={`posts/${post.id}`}>{post.title}</Link></Card.Header>
           <Card.Meta>{post.author}</Card.Meta>
+          <Card.Meta> <Icon name='calendar' /> {creationDate.toUTCString()}</Card.Meta>
           <Card.Description>{post.body}</Card.Description>
         </Card.Content>
         <Card.Content extra>

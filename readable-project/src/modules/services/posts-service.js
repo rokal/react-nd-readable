@@ -13,7 +13,6 @@ class PostsService extends RestService {
 
   vote = (postId, option) => {
     const url = `${baseUrl}/${postId}`;
-    console.log(option)
     return this.apiClient.post(url, {option: option});
   };
 }

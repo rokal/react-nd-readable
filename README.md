@@ -1,22 +1,18 @@
-# Readable API Server
+# Readable - React Nano Degree
 
-This is the starter project for the final assessment project for Udacity's Redux course where you will build a content and comment web app. Users will be able to post content to predefined categories, comment on their posts and other users' posts, and vote on posts and comments. Users will also be able to edit and delete posts and comments.
+The second project of react nano degree program. It has been bootstraped with `create react app` library.
 
-This repository includes the code for the backend API Server that you'll use to develop and interact with the front-end portion of the project.
+## Features
 
-## Start Developing
+  1. List posts
+  2. Show post details and comments
+  3. Create a post
+  4. Write a comment about a post
 
-To get started developing right away:
 
-* Install and start the API server
-    - `cd api-server`
-    - `npm install`
-    - `node server`
-* In another terminal window, use Create React App to scaffold out the front-end
-    - `create-react-app frontend`
-    - `cd frontend`
-    - `npm start`
+## Installation
 
-## API Server
-
-Information about the API server and how to use it can be found in its [README file](api-server/README.md).
+  1. Clone the project
+  2. `cd api-server`, `npm install` and `node server` to start the api server
+  3. `cd ../readble-project`, `npm install` and `npm start` to boot the app.
+It is supposed to go `http://localhost:3000`. Otherwise, go there manually.

@@ -3,7 +3,7 @@ import config from './config'
 import { keyBy } from 'lodash'
 
 const initialState = {
-  byId: {}
+  byId: {}, currentEntity: {}
 }
 
 const reducer = (state = initialState, action) => {
@@ -14,6 +14,8 @@ const reducer = (state = initialState, action) => {
       const allPosts = {...state.byId}
       allPosts[action.postId] = action.post
       return { ...state, byId: allPosts}
+    case Actions.SET_CURRENT_ENTITY: 
+      return {...state, currentEntity: action.post}
     default:
       return state;
   }

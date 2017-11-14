@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
+import {Button, Icon, Header, Label} from 'semantic-ui-react'
 import {values} from 'lodash'
 import PostsActions from './../../modules/posts/actions'
 import CategoriesActions from './../../modules/categories/actions'
+import CategoriesSelector from './../../modules/categories/selector'
 import PostsSelector from '../../modules/posts/selector'
 import PostList from './components/PostsList'
+import PostFormModal from './components/PostForm'
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -15,10 +18,18 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 class PostsPage extends Component{
+  constructor (props) {
+    super(props)
+    this.state = {showModal: false}
+  }
 
   componentDidMount() {
-    this.props.postActions.fetchAll();
+    const {categoriesActions, postActions} = this.props
+    postActions.fetchAll();
+    categoriesActions.fetchAll()
   }
+
+  toggleNewPostModal = () => {this.setState({showModal:!this.state.showModal})}
 
   handlePostVote = (postId, voteOption) => {
     const {postActions} = this.props
@@ -26,11 +37,29 @@ class PostsPage extends Component{
   }
 
   render () {
-    const {postsById} = this.props
+    const {postsById, categoriesOptions} = this.props
     const posts = values(postsById)
     return (
       <div>
-        <PostList posts={posts} onVote={this.handlePostVote}/>
+        <Header>
+          <span>
+            <Icon name='list layout' />
+          </span>
+          <span>
+            List of the posts
+          <Label>
+            <span>Total: </span>
+            <Label.Detail>{posts.length}</Label.Detail>
+          </Label>
+          </span>
+          <Button floated='right' color='green' type='button' onClick={this.toggleNewPostModal}>
+            <Icon name='plus' /> New post
+          </Button>
+        </Header>
+        
+        <PostList posts={posts} onVote={this.handlePostVote} />
+
+        <PostFormModal open={this.state.showModal} categoriesOptions={categoriesOptions} onToggleModal={this.toggleNewPostModal}/>
       </div>
     )
   }
@@ -38,7 +67,8 @@ class PostsPage extends Component{
 
 const mapStateToProps = (state) => {
   return {
-    postsById: PostsSelector.getEntities(state)
+    postsById: PostsSelector.getEntities(state),
+    categoriesOptions: CategoriesSelector.getCategoriesOptions(state),
   }
 }
 

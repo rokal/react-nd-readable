@@ -21,7 +21,8 @@ const callFetch = (url, params) => {
 const apiParams = {
   headers: {
     'Authorization': AuthHeader,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': true
   }
 };
 
