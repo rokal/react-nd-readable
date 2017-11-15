@@ -27,13 +27,8 @@ class PostForm extends React.Component {
     this.state = {timestamp: Date.now() }
   }
 
-  handleSubmit = (elements) => {
-    const newPost = this.state
-    console.log(newPost)
-    this.props.onToggleModal()
-  }
   render () {
-    const {categoriesOptions, onToggleModal, open} = this.props
+    const {categoriesOptions, onToggleModal, open, onSavePost} = this.props
     return (
       <Modal open={open}>
         <Header icon='pencil' content='Create a new post' />
@@ -46,7 +41,7 @@ class PostForm extends React.Component {
             <Button color='red' onClick={onToggleModal}>
               <Icon name='remove' /> Cancel
             </Button>
-            <Button color='green' floated='right' type='button' onClick={this.handleSubmit}><Icon name='check' /> Save the post</Button>
+            <Button color='green' floated='right' type='button' onClick={onSavePost}><Icon name='check' /> Save the post</Button>
           </Form>
         </Modal.Content>
       </Modal>

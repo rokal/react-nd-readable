@@ -10,7 +10,8 @@ export const Actions = createAction([
   'FETCH_ALL',
   'SET_ENTITIES',
   'UPDATE_POST',
-  'SET_CURRENT_ENTITY'
+  'SET_CURRENT_ENTITY',
+  'ADD_POST'
 ], prefix);
 
 const postService = getService('posts')
@@ -41,6 +42,17 @@ const ActionCreators = {
       dispatch(ActionCreators.setCurrentEntity(post))
     })
   },
+
+  createPost: (post, callback) => dispatch => {
+    postService.createPost(post).then(newPost => {
+      if(callback) {
+        callback(post)
+      }
+      dispatch(ActionCreators.addPost(newPost))
+    })
+  },
+
+  addPost: (post) => ({type: Actions.ADD_POST, post}),
 
   setCurrentEntity: (post) => ({type: Actions.SET_CURRENT_ENTITY, post}),
   setEditedEntity: (post) => initialize(config.moduleName, post)

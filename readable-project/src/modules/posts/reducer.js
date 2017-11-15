@@ -16,6 +16,10 @@ const reducer = (state = initialState, action) => {
       return { ...state, byId: allPosts}
     case Actions.SET_CURRENT_ENTITY: 
       return {...state, currentEntity: action.post}
+    case Actions.ADD_POST:
+      const posts = {...state.byId}
+      posts[action.post.id] = action.post
+      return { ...state, byId: posts}
     default:
       return state;
   }

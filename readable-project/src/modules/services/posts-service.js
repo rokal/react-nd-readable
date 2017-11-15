@@ -15,6 +15,10 @@ class PostsService extends RestService {
     const url = `${baseUrl}/${postId}`;
     return this.apiClient.post(url, {option: option});
   };
+
+  createPost = (post) => {
+    return this.apiClient.post(baseUrl, post)
+  }
 }
 
 export default PostsService;

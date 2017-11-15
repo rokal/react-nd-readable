@@ -40,6 +40,14 @@ class PostsPage extends Component{
     postActions.votePost(postId, voteOption)
   }
 
+  handlePostCreation = () => {
+    const {postActions, editedPost} = this.props
+    postActions.createPost(editedPost, (post) => {
+      // some notification here
+      this.setState({showModal:!this.state.showModal})
+    })
+  }
+
   render () {
     const {postsById, categoriesOptions} = this.props
     const posts = values(postsById)
@@ -67,7 +75,7 @@ class PostsPage extends Component{
           open={this.state.showModal}
           categoriesOptions={categoriesOptions}
           onToggleModal={this.toggleNewPostModal}
-          onSavePost={() => {console.log('saving')}}
+          onSavePost={this.handlePostCreation}
         />
       </div>
     )
@@ -78,6 +86,7 @@ const mapStateToProps = (state) => {
   return {
     postsById: PostsSelector.getEntities(state),
     categoriesOptions: CategoriesSelector.getCategoriesOptions(state),
+    editedPost: PostsSelector.getEditedEntity(state)
   }
 }
 
