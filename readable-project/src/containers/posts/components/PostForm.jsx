@@ -1,23 +1,30 @@
 import React from 'react'
 import {array, bool, func} from 'prop-types'
-import { Form, Select, TextArea, Modal, Header, Button, Icon } from 'semantic-ui-react'
+import { Form, Modal, Header, Button, Icon } from 'semantic-ui-react'
+import {reduxForm, Field} from 'redux-form'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+
+import config from '../../../modules/posts/config'
+import PostsSelector from '../../../modules/posts/selector'
+import CategoriesSelector from '../../../modules/categories/selector'
+import PostsActions from '../../../modules/posts/actions'
+import CategoriesActions from '../../../modules/categories/actions'
+import TextField from '../../components/form/TextField'
+import TextArea from '../../components/form/TextArea'
+import SelectField from '../../components/form/SelectField'
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postActions: bindActionCreators(PostsActions, dispatch),
+    categoriesActions: bindActionCreators(CategoriesActions, dispatch)
+  }
+}
 
 class PostForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {timestamp: Date.now() }
-  }
-
-  handleCategoryChange = (event, data) => {
-    this.setState({category: data.value})
-  }
-
-  handleTitleChange = (event) => {
-    console.log(event.target.value)
-  }
-
-  handleAuthorChange = (event) => {
-    console.log(event.target.value)
   }
 
   handleSubmit = (elements) => {
@@ -32,32 +39,16 @@ class PostForm extends React.Component {
         <Header icon='pencil' content='Create a new post' />
         <Modal.Content>
           <Form>
-            
-            <Form.Field>
-              <label>Author :</label>
-              <input placeholder='author here' value={this.state.author} onChange={this.handleAuthorChange}/>
-            </Form.Field>
-            <div>
-              <label>Enter a title</label>
-              <input value={this.state.title} onChange={(event) => this.setState({title: event.target.value})} />
-            </div>
-            <Form.Field>
-              <label>Category :</label>
-              <Select value={this.state.category} placeholder='Choose a category' options={categoriesOptions} onChange={this.handleCategoryChange} />
-            </Form.Field>
-            <Form.Field>
-              <label>Content of the post</label>
-              <TextArea placeholder='content here' value={this.state.body} onChange={(event) => this.setState({body: event.target.value})}/>
-            </Form.Field>
+            <Field component={TextField} name='title' label='Title' required />
+            <Field component={TextField} name='author' label='Author' />
+            <Field component={SelectField} name='category' options={categoriesOptions} label='Category' required />
+            <Field component={TextArea} name='body' label='Content of the post' required />
             <Button color='red' onClick={onToggleModal}>
-            <Icon name='remove' /> Cancel
-          </Button>
-          <Button color='green' floated='right' type='button' onClick={this.handleSubmit}><Icon name='check' /> Save the post</Button>
+              <Icon name='remove' /> Cancel
+            </Button>
+            <Button color='green' floated='right' type='button' onClick={this.handleSubmit}><Icon name='check' /> Save the post</Button>
           </Form>
         </Modal.Content>
-        <Modal.Actions>
-          
-        </Modal.Actions>
       </Modal>
     )
   }
@@ -66,7 +57,19 @@ class PostForm extends React.Component {
 PostForm.propTypes= {
   categoriesOptions: array.isRequired,
   open: bool.isRequired,
-  onToggleModal: func.isRequired
+  onToggleModal: func.isRequired,
+  onSavePost: func.isRequired
 }
 
-export default PostForm
+const mapStateToProps = (state) => ({
+  editedPost: PostsSelector.getCurrentEntity(state),
+  categoriesOptions:  CategoriesSelector.getCategoriesOptions(state)
+})
+
+const ConnectedPostForm = connect(mapStateToProps, mapDispatchToProps)(PostForm)
+
+const ConnectedForm = reduxForm({
+  form: config.storeBranch
+})(ConnectedPostForm)
+
+export default ConnectedForm

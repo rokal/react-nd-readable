@@ -1,3 +1,5 @@
+import {initialize} from 'redux-form'
+
 import config from './config';
 import {getService} from '../services/index'
 import {createAction} from '../redux-utils';
@@ -40,6 +42,7 @@ const ActionCreators = {
     })
   },
 
-  setCurrentEntity: (post) => ({type: Actions.SET_CURRENT_ENTITY, post})
+  setCurrentEntity: (post) => ({type: Actions.SET_CURRENT_ENTITY, post}),
+  setEditedEntity: (post) => initialize(config.moduleName, post)
 };
 export default ActionCreators

@@ -29,7 +29,11 @@ class PostsPage extends Component{
     categoriesActions.fetchAll()
   }
 
-  toggleNewPostModal = () => {this.setState({showModal:!this.state.showModal})}
+  toggleNewPostModal = () => {
+    const newPost = PostsSelector.createPostDraft()
+    this.props.postActions.setEditedEntity(newPost)
+    this.setState({showModal:!this.state.showModal})
+  }
 
   handlePostVote = (postId, voteOption) => {
     const {postActions} = this.props
@@ -59,7 +63,12 @@ class PostsPage extends Component{
         
         <PostList posts={posts} onVote={this.handlePostVote} />
 
-        <PostFormModal open={this.state.showModal} categoriesOptions={categoriesOptions} onToggleModal={this.toggleNewPostModal}/>
+        <PostFormModal
+          open={this.state.showModal}
+          categoriesOptions={categoriesOptions}
+          onToggleModal={this.toggleNewPostModal}
+          onSavePost={() => {console.log('saving')}}
+        />
       </div>
     )
   }
