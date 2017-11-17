@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Button, Icon, Header, Label } from 'semantic-ui-react'
+import { Button, Icon, Header, Label, Grid } from 'semantic-ui-react'
 import PostsActions from './../../modules/posts/actions'
 import CategoriesActions from './../../modules/categories/actions'
 import CategoriesSelector from './../../modules/categories/selector'
 import PostsSelector from '../../modules/posts/selector'
 import PostList from './components/PostsList'
 import PostFormModal from './components/PostForm'
+import Sidebar from '../Sidebar'
 import { notify } from '../../modules/app/Notificator'
 import NotificationTypes from '../../modules/app/notificationTypes'
 
@@ -53,49 +54,56 @@ class PostsPage extends Component {
     const { posts, categoriesOptions, postFilters } = this.props
     return (
       <div>
-        <Header style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>
-            <span>
-              <Icon name='list layout' />
-            </span>
-            <span>
-              List of the posts
+        <Grid centered>
+          <Grid.Column width={4} style={{ minHeight: '74vh' }}>
+            <Sidebar />
+          </Grid.Column>
+          <Grid.Column width={12} style={{ minHeight: '74vh' }}>
+            <Header style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>
+                <span>
+                  <Icon name='list layout' />
+                </span>
+                <span>
+                  List of the posts
             <Label>
-                <span>Total: </span>
-                <Label.Detail>{posts.length}</Label.Detail>
-              </Label>
-            </span>
-          </span>
-          <Button color='green' type='button' onClick={this.toggleNewPostModal}>
-            <Icon name='plus' /> New post
+                    <span>Total: </span>
+                    <Label.Detail>{posts.length}</Label.Detail>
+                  </Label>
+                </span>
+              </span>
+              <Button color='green' type='button' onClick={this.toggleNewPostModal}>
+                <Icon name='plus' /> New post
           </Button>
-        </Header>
-        <div style={{padding: '5px'}}>
-          {postFilters.category && (
-            <span>Category: <Label>
-              {postFilters.category}
-              <Icon name='delete' />
-            </Label></span>
-          )}
-          {postFilters.title && (
-            <span>Title contains: <Label>
-              {postFilters.title}
-            </Label></span>
-          )}
-          {postFilters.order && (
-            <span>Order: <Label>
-              {postFilters.order}
-            </Label></span>
-          )}
-        </div>
-        <PostList posts={posts} onVote={this.handlePostVote} />
+            </Header>
+            <div style={{ padding: '5px' }}>
+              {postFilters.category && (
+                <span>Category: <Label>
+                  {postFilters.category}
+                  <Icon name='delete' />
+                </Label></span>
+              )}
+              {postFilters.title && (
+                <span>Title contains: <Label>
+                  {postFilters.title}
+                </Label></span>
+              )}
+              {postFilters.order && (
+                <span>Order: <Label>
+                  {postFilters.order}
+                </Label></span>
+              )}
+            </div>
+            <PostList posts={posts} onVote={this.handlePostVote} />
 
-        <PostFormModal
-          open={this.state.showModal}
-          categoriesOptions={categoriesOptions}
-          onToggleModal={this.toggleNewPostModal}
-          onSavePost={this.handlePostCreation}
-        />
+            <PostFormModal
+              open={this.state.showModal}
+              categoriesOptions={categoriesOptions}
+              onToggleModal={this.toggleNewPostModal}
+              onSavePost={this.handlePostCreation}
+            />
+          </Grid.Column>
+        </Grid>
       </div>
     )
   }
@@ -106,7 +114,7 @@ const mapStateToProps = (state) => {
     posts: PostsSelector.getFilteredEntities(state),
     categoriesOptions: CategoriesSelector.getCategoriesOptions(state),
     editedPost: PostsSelector.getEditedEntity(state),
-    postFilters: PostsSelector.getPostFilters(state)
+    postFilters: PostsSelector.getPostFilters(state) || {}
   }
 }
 

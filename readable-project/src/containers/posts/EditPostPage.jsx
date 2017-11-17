@@ -8,6 +8,7 @@ import PostsActions from './../../modules/posts/actions'
 import CategoriesActions from './../../modules/categories/actions'
 import PostsSelector from './../../modules/posts/selector'
 import Rating from '../components/Rating'
+import { Link } from 'react-router-dom';
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -46,7 +47,10 @@ class EditPostPage extends React.Component {
           <Item.Content>
             <Item.Header color='blue'>
               <Header as='h3'>
-                {get(currentPost, 'title', '')}
+                <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                  <span>{get(currentPost, 'title', '')}</span>
+                  <span><Link to='/posts'><Icon name='reply' /> Back to posts list</Link></span>
+                </div>
                 <Header.Subheader>
                   by {capitalize(get(currentPost, 'author', ''))}
                 </Header.Subheader>

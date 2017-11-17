@@ -20,10 +20,6 @@ const mapDispatchToProps = (dispatch) => {
 }
 class Sidebar extends React.Component {
 
-  componentWillMount = () => {
-    this.props.postActions.initializeFilterForm()
-  }
-
   handleCategoryChange = (e, value) => {
     this.props.postActions.findPostByCategory(value)
   }
