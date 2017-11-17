@@ -8,7 +8,7 @@ class PostList extends React.Component {
   render () {
     const { posts, onVote } = this.props
     return (
-      <Card.Group>
+      <Card.Group itemsPerRow={2}>
         {posts.map((post, index) => {
           return (
             <Post key={index} post={post} onVote={onVote} />

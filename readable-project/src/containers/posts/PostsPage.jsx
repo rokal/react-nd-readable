@@ -1,14 +1,15 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
-import {Button, Icon, Header, Label} from 'semantic-ui-react'
-import {values} from 'lodash'
+import React, { Component } from 'react';
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { Button, Icon, Header, Label } from 'semantic-ui-react'
 import PostsActions from './../../modules/posts/actions'
 import CategoriesActions from './../../modules/categories/actions'
 import CategoriesSelector from './../../modules/categories/selector'
 import PostsSelector from '../../modules/posts/selector'
 import PostList from './components/PostsList'
 import PostFormModal from './components/PostForm'
+import { notify } from '../../modules/app/Notificator'
+import NotificationTypes from '../../modules/app/notificationTypes'
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -17,14 +18,14 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-class PostsPage extends Component{
+class PostsPage extends Component {
   constructor (props) {
     super(props)
-    this.state = {showModal: false}
+    this.state = { showModal: false }
   }
 
-  componentDidMount() {
-    const {categoriesActions, postActions} = this.props
+  componentDidMount () {
+    const { categoriesActions, postActions } = this.props
     postActions.fetchAll();
     categoriesActions.fetchAll()
   }
@@ -32,43 +33,61 @@ class PostsPage extends Component{
   toggleNewPostModal = () => {
     const newPost = PostsSelector.createPostDraft()
     this.props.postActions.setEditedEntity(newPost)
-    this.setState({showModal:!this.state.showModal})
+    this.setState({ showModal: !this.state.showModal })
   }
 
   handlePostVote = (postId, voteOption) => {
-    const {postActions} = this.props
+    const { postActions } = this.props
     postActions.votePost(postId, voteOption)
   }
 
   handlePostCreation = () => {
-    const {postActions, editedPost} = this.props
+    const { postActions, editedPost } = this.props
     postActions.createPost(editedPost, (post) => {
-      // some notification here
-      this.setState({showModal:!this.state.showModal})
+      this.setState({ showModal: !this.state.showModal })
+      notify({ type: NotificationTypes.SUCCESS, title: 'Post creation', message: 'Post successflly created' })
     })
   }
 
   render () {
-    const {postsById, categoriesOptions} = this.props
-    const posts = values(postsById)
+    const { posts, categoriesOptions, postFilters } = this.props
     return (
       <div>
-        <Header>
+        <Header style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>
-            <Icon name='list layout' />
+            <span>
+              <Icon name='list layout' />
+            </span>
+            <span>
+              List of the posts
+            <Label>
+                <span>Total: </span>
+                <Label.Detail>{posts.length}</Label.Detail>
+              </Label>
+            </span>
           </span>
-          <span>
-            List of the posts
-          <Label>
-            <span>Total: </span>
-            <Label.Detail>{posts.length}</Label.Detail>
-          </Label>
-          </span>
-          <Button floated='right' color='green' type='button' onClick={this.toggleNewPostModal}>
+          <Button color='green' type='button' onClick={this.toggleNewPostModal}>
             <Icon name='plus' /> New post
           </Button>
         </Header>
-        
+        <div style={{padding: '5px'}}>
+          {postFilters.category && (
+            <span>Category: <Label>
+              {postFilters.category}
+              <Icon name='delete' />
+            </Label></span>
+          )}
+          {postFilters.title && (
+            <span>Title contains: <Label>
+              {postFilters.title}
+            </Label></span>
+          )}
+          {postFilters.order && (
+            <span>Order: <Label>
+              {postFilters.order}
+            </Label></span>
+          )}
+        </div>
         <PostList posts={posts} onVote={this.handlePostVote} />
 
         <PostFormModal
@@ -84,9 +103,10 @@ class PostsPage extends Component{
 
 const mapStateToProps = (state) => {
   return {
-    postsById: PostsSelector.getEntities(state),
+    posts: PostsSelector.getFilteredEntities(state),
     categoriesOptions: CategoriesSelector.getCategoriesOptions(state),
-    editedPost: PostsSelector.getEditedEntity(state)
+    editedPost: PostsSelector.getEditedEntity(state),
+    postFilters: PostsSelector.getPostFilters(state)
   }
 }
 

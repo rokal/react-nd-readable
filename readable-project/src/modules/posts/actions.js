@@ -1,4 +1,4 @@
-import {initialize} from 'redux-form'
+import {initialize, change} from 'redux-form'
 
 import config from './config';
 import {getService} from '../services/index'
@@ -55,6 +55,15 @@ const ActionCreators = {
   addPost: (post) => ({type: Actions.ADD_POST, post}),
 
   setCurrentEntity: (post) => ({type: Actions.SET_CURRENT_ENTITY, post}),
-  setEditedEntity: (post) => initialize(config.moduleName, post)
+  setEditedEntity: (post) => initialize(config.moduleName, post),
+  initializeFilterForm: () => initialize(config.filterForm, {title: '', category: null, order: 'asc'}),
+  findPostByCategory: (category) => dispatch => {
+    if (category) {
+      postService.getCategoryPosts(category).then(posts => {
+        dispatch(ActionCreators.setEntities(posts))
+      })
+    }
+  },
+  changeOrder: (value) => change(config.filterForm, 'order', value)
 };
 export default ActionCreators

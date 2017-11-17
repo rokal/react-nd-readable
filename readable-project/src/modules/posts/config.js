@@ -1,4 +1,5 @@
 export default {
   storeBranch: 'posts',
-  moduleName: 'posts'
+  moduleName: 'posts',
+  filterForm: 'filterForm'
 }

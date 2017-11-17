@@ -4,6 +4,7 @@ import MainLayout from './containers/MainLayout'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { createStore, compose, applyMiddleware } from 'redux'
+import ReduxToastr from 'react-redux-toastr'
 import thunk from 'redux-thunk'
 
 
@@ -23,6 +24,14 @@ const App = (props) => (
           <Route path='/posts' component={MainLayout} />
           <Redirect from='/' to='/posts' />
         </Switch>
+        <ReduxToastr
+          timeOut={4000}
+          newestOnTop={false}
+          preventDuplicates
+          position="bottom-right"
+          transitionIn="fadeIn"
+          transitionOut="fadeOut"
+          progressBar />
       </div>
     </Router >
   </Provider>
