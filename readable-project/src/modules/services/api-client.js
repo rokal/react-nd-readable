@@ -7,6 +7,9 @@ const callFetch = (url, params) => {
   return new Promise((resolve, reject) => {
     fetch(fullUrl, params)
       .then(response => {
+        if(response.status >= 300 || response.status < 200) {
+          reject(new Error('something worng happenned'))
+        }
         return response.json()
       })
       .then(result => {

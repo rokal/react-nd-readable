@@ -2,18 +2,27 @@ import React from 'react'
 import { Icon, Segment, Item, Header, Label, Container } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { get, capitalize } from 'lodash'
+import { get, capitalize, values } from 'lodash'
+import { Link } from 'react-router-dom'
 
+// actions
 import PostsActions from './../../modules/posts/actions'
 import CategoriesActions from './../../modules/categories/actions'
+import CommentsActions from '../../modules/comments/actions'
+// selectors
 import PostsSelector from './../../modules/posts/selector'
+import CommentsSelector, {getEditedComment} from '../../modules/comments/selector'
+
+// components
 import Rating from '../components/Rating'
-import { Link } from 'react-router-dom';
+import CommentsList from '../comments/CommentsList'
+import CommentForm from '../comments/CommentForm'
 
 const mapDispatchToProps = (dispatch) => {
   return {
     postActions: bindActionCreators(PostsActions, dispatch),
-    categoriesActions: bindActionCreators(CategoriesActions, dispatch)
+    categoriesActions: bindActionCreators(CategoriesActions, dispatch),
+    commentsActions: bindActionCreators(CommentsActions, dispatch)
   }
 }
 
@@ -24,10 +33,12 @@ class EditPostPage extends React.Component {
   }
 
   componentDidMount () {
-    const { match, postActions } = this.props
+    const { match, postActions, categoriesActions, commentsActions } = this.props
     const id = match.params.id
     postActions.getCurrentEntity(id)
-    this.props.categoriesActions.fetchAll();
+    categoriesActions.fetchAll();
+    commentsActions.fetchPostComments(id)
+    commentsActions.initializeCommentForm(id)
   }
 
   handlePostVote = (voteOption) => {
@@ -37,43 +48,63 @@ class EditPostPage extends React.Component {
     })
   }
 
+  handleCommentVote = (commentId, voteOption) => {
+    const { commentsActions } = this.props
+    commentsActions.voteComment(commentId, voteOption, (comment) => {
+      commentsActions.updateComment(commentId, comment)
+    })
+  }
+
+  handleSaveComment = () => {
+    const {editedComment, commentsActions} = this.props
+    commentsActions.createComment(editedComment, (comment) => {
+      console.log(comment)
+    })
+  }
+
   render () {
-    const { currentPost } = this.props
+    const { currentPost, commentsById, editedComment } = this.props
     const creationDate = new Date()
     creationDate.setTime(currentPost.timestamp)
     return (
-      <Segment>
-        <Item>
-          <Item.Content>
-            <Item.Header color='blue'>
-              <Header as='h3'>
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                  <span>{get(currentPost, 'title', '')}</span>
-                  <span><Link to='/posts'><Icon name='reply' /> Back to posts list</Link></span>
-                </div>
-                <Header.Subheader>
-                  by {capitalize(get(currentPost, 'author', ''))}
-                </Header.Subheader>
-                <Header.Subheader>
-                  <Icon name='calendar' /> {creationDate.toUTCString()}
-                </Header.Subheader>
-              </Header>
-            </Item.Header>
-            <Item.Description>
-              <Label as='a' tag>{currentPost.category}</Label>
-            </Item.Description>
-          </Item.Content>
-        </Item>
-        <Container text> {currentPost.body}</Container>
-        <Container textAlign='right'><Rating score={currentPost.voteScore || 0} onVote={this.handlePostVote} /></Container>
-      </Segment>
+      <div>
+        <Segment>
+          <Item>
+            <Item.Content>
+              <Item.Header color='blue'>
+                <Header as='h3'>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{get(currentPost, 'title', '')}</span>
+                    <span><Link to='/posts'><Icon name='reply' /> Back to posts list</Link></span>
+                  </div>
+                  <Header.Subheader>
+                    by {capitalize(get(currentPost, 'author', ''))}
+                  </Header.Subheader>
+                  <Header.Subheader>
+                    <Icon name='calendar' /> {creationDate.toUTCString()}
+                  </Header.Subheader>
+                </Header>
+              </Item.Header>
+              <Item.Description>
+                <Label as='a' tag>{currentPost.category}</Label>
+              </Item.Description>
+            </Item.Content>
+          </Item>
+          <Container text> {currentPost.body}</Container>
+          <Container textAlign='right'><Rating score={currentPost.voteScore || 0} onVote={this.handlePostVote} /></Container>
+        </Segment>
+        <CommentsList comments={values(commentsById)} onVoteComment={this.handleCommentVote} />
+        <CommentForm editedComment={editedComment} onSaveComment={this.handleSaveComment} />
+      </div>
     )
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    currentPost: PostsSelector.getCurrentEntity(state)
+    currentPost: PostsSelector.getCurrentEntity(state),
+    commentsById: CommentsSelector.getComments(state),
+    editedComment: getEditedComment(state)
   }
 }
 
