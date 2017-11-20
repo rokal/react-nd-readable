@@ -2,7 +2,7 @@ import React from 'react'
 import { Icon, Segment, Item, Header, Label, Container } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { get, capitalize, values } from 'lodash'
+import { get, capitalize } from 'lodash'
 import { Link } from 'react-router-dom'
 
 // actions
@@ -11,7 +11,7 @@ import CategoriesActions from './../../modules/categories/actions'
 import CommentsActions from '../../modules/comments/actions'
 // selectors
 import PostsSelector from './../../modules/posts/selector'
-import CommentsSelector, {getEditedComment} from '../../modules/comments/selector'
+import CommentsSelector, {getEditedComment, getComments} from '../../modules/comments/selector'
 
 // components
 import Rating from '../components/Rating'
@@ -63,7 +63,7 @@ class EditPostPage extends React.Component {
   }
 
   render () {
-    const { currentPost, commentsById, editedComment } = this.props
+    const { currentPost, comments, editedComment } = this.props
     const creationDate = new Date()
     creationDate.setTime(currentPost.timestamp)
     return (
@@ -93,7 +93,7 @@ class EditPostPage extends React.Component {
           <Container text> {currentPost.body}</Container>
           <Container textAlign='right'><Rating score={currentPost.voteScore || 0} onVote={this.handlePostVote} /></Container>
         </Segment>
-        <CommentsList comments={values(commentsById)} onVoteComment={this.handleCommentVote} />
+        <CommentsList comments={comments} onVoteComment={this.handleCommentVote} />
         <CommentForm editedComment={editedComment} onSaveComment={this.handleSaveComment} />
       </div>
     )
@@ -103,7 +103,7 @@ class EditPostPage extends React.Component {
 const mapStateToProps = (state) => {
   return {
     currentPost: PostsSelector.getCurrentEntity(state),
-    commentsById: CommentsSelector.getComments(state),
+    comments: getComments(state),
     editedComment: getEditedComment(state)
   }
 }
