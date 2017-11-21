@@ -21,7 +21,7 @@ class SelectField extends React.Component {
           <Select
             {...textFieldProps}
             options={options}
-            value={value}
+            value={value || input.value}
             name={name}
             disabled={disabled}
             placeholder={placeholder}

@@ -19,6 +19,10 @@ class PostsService extends RestService {
   createPost = (post) => {
     return this.apiClient.post(baseUrl, post)
   }
+  updatePost = (post) => {
+    const url = `${baseUrl}/${post.id}`;
+    return this.apiClient.put(url, post)
+  }
 
   getCategoryPosts = (category) => {
     const url = `/${category}/posts`

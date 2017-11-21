@@ -17,6 +17,11 @@ class Post extends React.Component {
     onDeletePost(post.id)
   }
 
+  launchEditModal = () => {
+    const {onEdit, post} = this.props
+    onEdit(post)
+  }
+
   render () {
     const { post } = this.props
     const creationDate = new Date()
@@ -34,6 +39,7 @@ class Post extends React.Component {
             <Icon name='comments' /> {post.commentCount}
           </Label>
           <Label><Icon name='tags' />{post.category}</Label>
+          <Label style={{ cursor: 'pointer' }} color='blue' title='edit' onClick={this.launchEditModal}><Icon name='pencil' /></Label>
           <div style={{padding: '2px'}}>
             <Rating score={post.voteScore || 0} onVote={this.handleVote} />
             <Label style={{ cursor: 'pointer' }} color='red' title='delete' onClick={this.handleDeletePost}>X</Label>
@@ -47,7 +53,8 @@ class Post extends React.Component {
 Post.propTypes = {
   post: object.isRequired,
   onVote: func.isRequired,
-  onDeletePost: func.isRequired
+  onDeletePost: func.isRequired,
+  onEdit: func.isRequired
 }
 
 export default Post

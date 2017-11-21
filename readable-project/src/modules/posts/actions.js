@@ -57,6 +57,15 @@ const ActionCreators = {
     })
   },
 
+  updateRemotePost: (post, callback) => dispatch => {
+    postService.updatePost(post).then(updatedPost => {
+      if(callback) {
+        callback(updatedPost)
+      }
+      dispatch(ActionCreators.updatePost(updatedPost.id, updatedPost))
+    })
+  },
+
   deletePost: (postId, callback) => dispatch => {
     postService.deletePost(postId).then(() => {
       callback()

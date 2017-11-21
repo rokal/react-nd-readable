@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import {findIndex} from 'lodash'
 import { bindActionCreators } from 'redux'
 import { Button, Icon, Header, Label, Grid } from 'semantic-ui-react'
 import PostsActions from './../../modules/posts/actions'
@@ -43,10 +44,13 @@ class PostsPage extends Component {
   }
 
   handlePostCreation = () => {
-    const { postActions, editedPost } = this.props
-    postActions.createPost(editedPost, (post) => {
+    const { postActions, editedPost, posts } = this.props
+    const isNew=findIndex(posts, ['id', editedPost.id]) === -1
+    const method = isNew ? postActions.createPost : postActions.updateRemotePost
+    const notificatonDetails = !isNew ? {title: 'Post update', message: 'Post successfully updated'}:{title: 'Post creation', message: 'Post successfully created'}
+    method(editedPost, (post) => {
       this.setState({ showModal: !this.state.showModal })
-      notify({ type: NotificationTypes.SUCCESS, title: 'Post creation', message: 'Post successflly created' })
+      notify({ type: NotificationTypes.SUCCESS, ...notificatonDetails })
     })
   }
 
@@ -62,6 +66,11 @@ class PostsPage extends Component {
       postActions.fetchAll();
       notify({ type: NotificationTypes.SUCCESS, title: 'Post deletion', message: 'Post successflly deleted' })
     })
+  }
+
+  handleLaunchEditModal = (post) => {
+    this.props.postActions.setEditedEntity(post)
+    this.setState({ showModal: !this.state.showModal })
   }
 
   render () {
@@ -108,7 +117,7 @@ class PostsPage extends Component {
                 </Label></span>
               )}
             </div>
-            <PostList posts={posts} onVote={this.handlePostVote} onDeletePost={this.handleDeletePost} />
+            <PostList posts={posts} onVote={this.handlePostVote} onDeletePost={this.handleDeletePost} onEdit={this.handleLaunchEditModal} />
 
             <PostFormModal
               open={this.state.showModal}

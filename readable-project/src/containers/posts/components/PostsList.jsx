@@ -6,12 +6,12 @@ import Post from './Post'
 
 class PostList extends React.Component {
   render () {
-    const { posts, onVote, onDeletePost } = this.props
+    const { posts, onVote, onDeletePost, onEdit } = this.props
     return (
       <Card.Group itemsPerRow={2}>
         {posts.map((post, index) => {
           return (
-            <Post key={index} post={post} onVote={onVote} onDeletePost={onDeletePost} />
+            <Post key={index} post={post} onVote={onVote} onDeletePost={onDeletePost} onEdit={onEdit} />
           )
         })}
       </Card.Group>
@@ -22,7 +22,8 @@ class PostList extends React.Component {
 PostList.propTypes = {
   posts: array.isRequired,
   onVote: func.isRequired,
-  onDeletePost: func.isRequired
+  onDeletePost: func.isRequired,
+  onEdit: func.isRequired
 }
 
 export default PostList
