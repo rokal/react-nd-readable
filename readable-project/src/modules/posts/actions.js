@@ -34,12 +34,17 @@ const ActionCreators = {
   },
   updatePost: (postId, post) => ({type: Actions.UPDATE_POST, postId, post}),
 
-  getCurrentEntity: (postId, callback) => dispatch => {
+  getCurrentEntity: (postId, successCallback, errorCallback) => dispatch => {
     postService.get(postId).then(post => {
-      if(callback) {
-        callback(post)
+      if(successCallback) {
+        successCallback(post)
       }
       dispatch(ActionCreators.setCurrentEntity(post))
+    }, (error)=> {
+      console.log(error)
+      if(errorCallback){
+        errorCallback(error)
+      }
     })
   },
 
@@ -49,6 +54,12 @@ const ActionCreators = {
         callback(post)
       }
       dispatch(ActionCreators.addPost(newPost))
+    })
+  },
+
+  deletePost: (postId, callback) => dispatch => {
+    postService.deletePost(postId).then(() => {
+      callback()
     })
   },
 
@@ -64,6 +75,7 @@ const ActionCreators = {
       })
     }
   },
-  changeOrder: (value) => change(config.filterForm, 'order', value)
+  changeOrder: (value) => change(config.filterForm, 'order', value),
+  removeCategoryFilter: () => change(config.filterForm, 'category', null)
 };
 export default ActionCreators

@@ -50,6 +50,20 @@ class PostsPage extends Component {
     })
   }
 
+  handleDeleteCategoryFilter = () => {
+    const {postActions} = this.props
+    postActions.removeCategoryFilter()
+    postActions.fetchAll()
+  }
+
+  handleDeletePost = (postId) => {
+    const {postActions} = this.props
+    postActions.deletePost(postId, () => {
+      postActions.fetchAll();
+      notify({ type: NotificationTypes.SUCCESS, title: 'Post deletion', message: 'Post successflly deleted' })
+    })
+  }
+
   render () {
     const { posts, categoriesOptions, postFilters } = this.props
     return (
@@ -66,7 +80,7 @@ class PostsPage extends Component {
                 </span>
                 <span>
                   List of the posts
-            <Label>
+                  <Label>
                     <span>Total: </span>
                     <Label.Detail>{posts.length}</Label.Detail>
                   </Label>
@@ -78,13 +92,13 @@ class PostsPage extends Component {
             </Header>
             <div style={{ padding: '5px' }}>
               {postFilters.category && (
-                <span>Category: <Label>
-                  {postFilters.category}
-                  <Icon name='delete' />
+                <span>Category: <Label onClick={this.handleDeleteCategoryFilter} >
+                  {postFilters.category === 'asc' ? 'Ascending order' : 'Descending order'}
+                  <Icon name='delete'/>
                 </Label></span>
               )}
               {postFilters.title && (
-                <span>Title contains: <Label>
+                <span>Title starting with: <Label>
                   {postFilters.title}
                 </Label></span>
               )}
@@ -94,7 +108,7 @@ class PostsPage extends Component {
                 </Label></span>
               )}
             </div>
-            <PostList posts={posts} onVote={this.handlePostVote} />
+            <PostList posts={posts} onVote={this.handlePostVote} onDeletePost={this.handleDeletePost} />
 
             <PostFormModal
               open={this.state.showModal}

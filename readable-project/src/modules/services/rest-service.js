@@ -20,5 +20,5 @@ export default class {
     return this.apiClient.post(this.baseUrl, data)
   }
 
-  delete = (id) => this.apiClient.delete(buildUrl(this.baseUrl, id));
+  delete = (url) => this.apiClient.delete(url);
 }

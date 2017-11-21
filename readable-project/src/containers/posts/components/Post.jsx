@@ -12,6 +12,11 @@ class Post extends React.Component {
     onVote(post.id, voteOption)
   }
 
+  handleDeletePost = () => {
+    const { onDeletePost, post } = this.props
+    onDeletePost(post.id)
+  }
+
   render () {
     const { post } = this.props
     const creationDate = new Date()
@@ -31,6 +36,7 @@ class Post extends React.Component {
           <Label><Icon name='tags' />{post.category}</Label>
           <div style={{padding: '2px'}}>
             <Rating score={post.voteScore || 0} onVote={this.handleVote} />
+            <Label style={{ cursor: 'pointer' }} color='red' title='delete' onClick={this.handleDeletePost}>X</Label>
           </div>
         </Card.Content>
       </Card>
@@ -40,7 +46,8 @@ class Post extends React.Component {
 
 Post.propTypes = {
   post: object.isRequired,
-  onVote: func.isRequired
+  onVote: func.isRequired,
+  onDeletePost: func.isRequired
 }
 
 export default Post

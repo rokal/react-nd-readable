@@ -4,12 +4,12 @@ import Comment from './Comment'
 
 class CommentsList extends React.Component {
   render() {
-    const {comments, onVoteComment} = this.props
+    const {comments, onVoteComment, onDeleteComment} = this.props
     return (
       <div>
         {comments.map(comment => {
           return (
-            <Comment key={comment.id} comment={comment} onVote={onVoteComment} />
+            <Comment key={comment.id} comment={comment} onVote={onVoteComment} onDeleteComment={onDeleteComment} />
           )
         })}
       </div>
@@ -19,7 +19,8 @@ class CommentsList extends React.Component {
 
 CommentsList.propTypes = {
   comments: array.isRequired,
-  onVoteComment: func.isRequired
+  onVoteComment: func.isRequired,
+  onDeleteComment: func.isRequired
 }
 
 export default CommentsList

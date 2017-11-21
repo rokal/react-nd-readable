@@ -1,20 +1,25 @@
 import React from 'react'
-import {object, func} from 'prop-types'
-import { Comment } from 'semantic-ui-react'
+import { object, func } from 'prop-types'
+import { Comment, Label } from 'semantic-ui-react'
 import TimeAgo from 'react-timeago'
 import userIco from './user.png'
 
 import Rating from '../components/Rating'
 
 class CustomComment extends React.Component {
-  
+
   handleVote = (voteOption) => {
     const { comment, onVote } = this.props
     onVote(comment.id, voteOption)
   }
 
+  handleDeleteComment = () => {
+    const { onDeleteComment, comment } = this.props
+    onDeleteComment(comment.id)
+  }
+
   render () {
-    const {comment} = this.props
+    const { comment } = this.props
     return (
       <Comment.Group>
         <Comment>
@@ -26,8 +31,9 @@ class CustomComment extends React.Component {
             </Comment.Metadata>
             <Comment.Text>{comment.body}</Comment.Text>
             <Comment.Actions>
-              <div style={{padding: '2px'}}>
+              <div style={{ padding: '2px' }}>
                 <Rating score={comment.voteScore || 0} onVote={this.handleVote} />
+                <Label style={{ cursor: 'pointer' }} color='red' title='delete' onClick={this.handleDeleteComment}>X</Label>
               </div>
             </Comment.Actions>
           </Comment.Content>
@@ -39,7 +45,8 @@ class CustomComment extends React.Component {
 
 CustomComment.propTypes = {
   comment: object.isRequired,
-  onVote: func.isRequired
+  onVote: func.isRequired,
+  onDeleteComment: func.isRequired
 }
 
 export default CustomComment

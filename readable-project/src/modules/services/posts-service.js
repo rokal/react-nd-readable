@@ -24,6 +24,10 @@ class PostsService extends RestService {
     const url = `/${category}/posts`
     return this.apiClient.get(url)
   }
+  deletePost = (postId) => {
+    const url = `/posts/${postId}`
+    return this.apiClient.delete(url)
+  }
 }
 
 export default PostsService;

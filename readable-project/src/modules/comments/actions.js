@@ -45,6 +45,14 @@ const ActionCreators = {
     })
   },
 
+  deleteComment: (commentId, callback) => dispatch => {
+    commentService.deleteComment(commentId).then(() => {
+      if(callback){
+        callback()
+      }
+    })
+  },
+
   addComment: (comment) => ({type: Actions.ADD_COMMENT, comment}),
 
   initializeCommentForm: (postId) => initialize(config.commentForm, {parentId: postId, id: uuid()})

@@ -17,7 +17,7 @@ export const getEditedComment = createSelector(
 
 export const getComments = createSelector([Selector.getComments], (commentsById) => {
   const comments = values(commentsById)
-  return orderBy(comments, ['timestamp'], ['desc'])
+  return orderBy(comments, ['timestamp'], ['asc'])
 })
 
 export default Selector

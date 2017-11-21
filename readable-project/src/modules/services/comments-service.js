@@ -20,6 +20,11 @@ class CommentsService extends RestService {
     comment.timestamp = Date.now()+1000
     return this.apiClient.post(this.baseUrl, comment)
   }
+
+  deleteComment = (commentId) => {
+    const url = `/comments/${commentId}`
+    return this.apiClient.delete(url)
+  }
 };
 
 export default CommentsService;

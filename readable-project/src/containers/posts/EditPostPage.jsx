@@ -5,13 +5,17 @@ import { bindActionCreators } from 'redux'
 import { get, capitalize } from 'lodash'
 import { Link } from 'react-router-dom'
 
+// notification
+import { notify } from '../../modules/app/Notificator'
+import NotificationTypes from '../../modules/app/notificationTypes'
+
 // actions
 import PostsActions from './../../modules/posts/actions'
 import CategoriesActions from './../../modules/categories/actions'
 import CommentsActions from '../../modules/comments/actions'
 // selectors
 import PostsSelector from './../../modules/posts/selector'
-import CommentsSelector, {getEditedComment, getComments} from '../../modules/comments/selector'
+import {getEditedComment, getComments} from '../../modules/comments/selector'
 
 // components
 import Rating from '../components/Rating'
@@ -33,9 +37,12 @@ class EditPostPage extends React.Component {
   }
 
   componentDidMount () {
-    const { match, postActions, categoriesActions, commentsActions } = this.props
+    const { match, postActions, categoriesActions, commentsActions, history } = this.props
     const id = match.params.id
-    postActions.getCurrentEntity(id)
+    postActions.getCurrentEntity(id, null, (error) => {
+      history.push('/posts')
+      notify({ type: NotificationTypes.ERROR, title: 'Post retrieve', message: `There was an error while fetching the post with the id: ${id}` })
+    })
     categoriesActions.fetchAll();
     commentsActions.fetchPostComments(id)
     commentsActions.initializeCommentForm(id)
@@ -57,8 +64,14 @@ class EditPostPage extends React.Component {
 
   handleSaveComment = () => {
     const {editedComment, commentsActions} = this.props
-    commentsActions.createComment(editedComment, (comment) => {
-      console.log(comment)
+    commentsActions.createComment(editedComment)
+  }
+
+  handleDeleteComment = (commentId) => {
+    const {commentsActions, match} = this.props
+    const id = match.params.id
+    commentsActions.deleteComment(commentId, () => {
+      commentsActions.fetchPostComments(id)
     })
   }
 
@@ -93,7 +106,7 @@ class EditPostPage extends React.Component {
           <Container text> {currentPost.body}</Container>
           <Container textAlign='right'><Rating score={currentPost.voteScore || 0} onVote={this.handlePostVote} /></Container>
         </Segment>
-        <CommentsList comments={comments} onVoteComment={this.handleCommentVote} />
+        <CommentsList comments={comments} onVoteComment={this.handleCommentVote}  onDeleteComment={this.handleDeleteComment} />
         <CommentForm editedComment={editedComment} onSaveComment={this.handleSaveComment} />
       </div>
     )
