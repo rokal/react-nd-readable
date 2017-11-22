@@ -11,7 +11,10 @@ export const Actions = createAction([
   'SET_ENTITIES',
   'UPDATE_POST',
   'SET_CURRENT_ENTITY',
-  'ADD_POST'
+  'ADD_POST',
+  'REMOVE_POST',
+  'SHOW_MODAL',
+  'HIDE_MODAL'
 ], prefix);
 
 const postService = getService('posts')
@@ -53,7 +56,6 @@ const ActionCreators = {
       if(callback) {
         callback(post)
       }
-      dispatch(ActionCreators.addPost(newPost))
     })
   },
 
@@ -73,10 +75,11 @@ const ActionCreators = {
   },
 
   addPost: (post) => ({type: Actions.ADD_POST, post}),
+  removePost: (postId) => ({type: Actions.REMOVE_POST, postId}),
 
   setCurrentEntity: (post) => ({type: Actions.SET_CURRENT_ENTITY, post}),
   setEditedEntity: (post) => initialize(config.moduleName, post),
-  initializeFilterForm: () => initialize(config.filterForm, {title: '', category: null, order: 'asc'}),
+  initializeFilterForm: () => initialize(config.filterForm, {voteCountOrder: 'desc'}),
   findPostByCategory: (category) => dispatch => {
     if (category) {
       postService.getCategoryPosts(category).then(posts => {
@@ -85,6 +88,9 @@ const ActionCreators = {
     }
   },
   changeOrder: (value) => change(config.filterForm, 'order', value),
-  removeCategoryFilter: () => change(config.filterForm, 'category', null)
+  removeCategoryFilter: () => change(config.filterForm, 'category', null),
+
+  showEditModal: (operation) => ({type: Actions.SHOW_MODAL, operation}),
+  hideEditModal: () => ({type: Actions.HIDE_MODAL})
 };
 export default ActionCreators

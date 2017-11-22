@@ -4,8 +4,8 @@ import { Form, Header, Button, Icon, Segment } from 'semantic-ui-react'
 import { reduxForm, Field } from 'redux-form'
 
 import config from '../../modules/comments/config'
-import TextField from '../components/form/TextField'
-import TextArea from '../components/form/TextArea'
+import TextField from '../commons/form/TextField'
+import TextArea from '../commons/form/TextArea'
 
 class CommentForm extends React.Component {
 

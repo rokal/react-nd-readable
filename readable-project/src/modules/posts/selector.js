@@ -10,18 +10,21 @@ Selector.getCurrentEntity = (state) => state[config.storeBranch].currentEntity
 Selector.createPostDraft = () => ({timestamp: Date.now(), id: uuid()})
 Selector.getEditedEntity = getFormValues(config.moduleName)
 Selector.getPostFilters = getFormValues(config.filterForm)
+Selector.getModalVisibility = (state) => state[config.storeBranch].showEditPostModal
+Selector.getOperation = (state) => state[config.storeBranch].operation
 
 Selector.getFilteredEntities = createSelector(
   [Selector.getEntities, Selector.getPostFilters],(postsById, filters) => {
     const posts = values(postsById)
     const filteredPosts = posts.filter(post => {
-      const title = post.title
+      const title = get(post, 'title', '')
       const filterTitle = get(filters, 'title', '')
       const result = title.toUpperCase().indexOf(filterTitle.toUpperCase()) >= 0
       return result
     })
-    const order = filters ? filters.order : null
-    return orderBy(filteredPosts, ['title'], [order])
+    const voteCountOrder = filters ? filters.voteCountOrder : null
+    const titleOrder = filters ? filters.titleOrder : null
+    return orderBy(filteredPosts, ['voteScore', 'title'], [voteCountOrder, titleOrder])
   }
 )
 
