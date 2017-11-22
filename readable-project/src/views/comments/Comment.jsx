@@ -4,7 +4,7 @@ import { Comment, Label } from 'semantic-ui-react'
 import TimeAgo from 'react-timeago'
 import userIco from './user.png'
 
-import Rating from '../components/Rating'
+import Rating from '../commons/Rating'
 
 class CustomComment extends React.Component {
 
