@@ -2,12 +2,14 @@ import React from 'react'
 import { Icon, Segment, Item, Header, Label, Container, Grid } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { get, capitalize } from 'lodash'
+import { get, capitalize, isEmpty } from 'lodash'
 import { Link } from 'react-router-dom'
 
 // notification
 import { notify } from '../modules/app/Notificator'
 import NotificationTypes from '../modules/app/notificationTypes'
+
+import {UPDATE_OPERATION} from '../modules/posts/operations'
 
 // actions
 import PostsActions from './../modules/posts/actions'
@@ -21,6 +23,7 @@ import { getEditedComment, getComments } from '../modules/comments/selector'
 import Rating from './commons/Rating'
 import CommentsList from './comments/CommentsList'
 import CommentForm from './comments/CommentForm'
+import PostFormModal from './posts/PostForm'
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -71,6 +74,27 @@ class PostDetailsView extends React.Component {
     })
   }
 
+  handleDeletePost = () => {
+    const {postActions, history, currentPost} = this.props
+    postActions.deletePost(currentPost.id, () => {
+      postActions.removePost(currentPost.id);
+      history.push('/')
+      notify({ type: NotificationTypes.SUCCESS, title: 'Post deletion', message: 'Post successflly deleted' })
+    })
+  }
+
+  handAfterPostUpsert = (post) => {
+    const {postActions} = this.props
+    postActions.updatePost(postActions.id, post)
+    postActions.setCurrentEntity(post)
+  }
+
+  handleLaunchEditModal = () => {
+    const {postActions, currentPost} = this.props
+    postActions.setEditedEntity(currentPost)
+    postActions.showEditModal(UPDATE_OPERATION)
+  }
+
   render () {
     const { currentPost, comments, editedComment, match } = this.props
     const creationDate = new Date()
@@ -79,34 +103,48 @@ class PostDetailsView extends React.Component {
     return (
       <Grid centered>
         <Grid.Column width={11} style={{ minHeight: '74vh' }}>
-          <Segment>
-            <Item>
-              <Item.Content>
-                <Item.Header color='blue'>
-                  <Header as='h3'>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>{get(currentPost, 'title', '')}</span>
-                      <span><Link to={`/${category}`}><Icon name='reply' /> Back to <Label>{category} </Label>posts</Link></span>
-                    </div>
-                    <Header.Subheader>
-                      by {capitalize(get(currentPost, 'author', ''))}
-                    </Header.Subheader>
-                    <Header.Subheader>
-                      <Icon name='calendar' /> {creationDate.toUTCString()}
-                    </Header.Subheader>
-                  </Header>
-                </Item.Header>
-                <Item.Description>
-                  <Label as='a' tag>{currentPost.category}</Label>
-                </Item.Description>
-              </Item.Content>
-            </Item>
-            <Container text> {currentPost.body}</Container>
-            <Container textAlign='right'><Rating score={currentPost.voteScore || 0} onVote={this.handlePostVote} /></Container>
-          </Segment>
-          <CommentsList comments={comments} onVoteComment={this.handleCommentVote} onDeleteComment={this.handleDeleteComment} />
-          <CommentForm editedComment={editedComment} onSaveComment={this.handleSaveComment} />
+          {isEmpty(currentPost) && (<div>
+            ERROR 404: This post no more exists.
+            <Link to='/'>Click here to go to the home page</Link>
+          </div>)}
+          {!isEmpty(currentPost) && (
+            <div>
+              <Segment>
+                <Item>
+                  <Item.Content>
+                    <Item.Header color='blue'>
+                      <Header as='h3'>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>{get(currentPost, 'title', '')}</span>
+                          <span><Link to={`/${category}`}><Icon name='reply' /> Back to <Label>{category} </Label>posts</Link></span>
+                        </div>
+                        <Header.Subheader>
+                          by {capitalize(get(currentPost, 'author', ''))}
+                        </Header.Subheader>
+                        <Header.Subheader>
+                          <Icon name='calendar' /> {creationDate.toUTCString()}
+                        </Header.Subheader>
+                      </Header>
+                    </Item.Header>
+                    <Item.Description>
+                      <Label as='a' tag>{currentPost.category}</Label>
+                    </Item.Description>
+                  </Item.Content>
+                </Item>
+                <Container text> {currentPost.body}</Container>
+                <Container textAlign='right'>
+                <Label style={{ cursor: 'pointer' }} color='blue' title='comment number'><Icon name='comment' />{comments.length}</Label>
+                  <Rating score={currentPost.voteScore || 0} onVote={this.handlePostVote} />
+                  <Label style={{ cursor: 'pointer' }} color='blue' title='edit' onClick={this.handleLaunchEditModal}><Icon name='pencil' /></Label>
+                  <Label style={{ cursor: 'pointer' }} color='red' title='delete' onClick={this.handleDeletePost}>X</Label>
+                </Container>
+              </Segment>
+              <CommentsList comments={comments} onVoteComment={this.handleCommentVote} onDeleteComment={this.handleDeleteComment} />
+              <CommentForm editedComment={editedComment} onSaveComment={this.handleSaveComment} />
+            </div>
+          )}
         </Grid.Column>
+        <PostFormModal afterPostUpsert={this.handAfterPostUpsert} />
       </Grid>
     )
   }

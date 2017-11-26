@@ -36,7 +36,9 @@ class PostForm extends React.Component {
     const notificatonDetails = operation !== CREATE_OPERATION  ? {title: 'Post update', message: 'Post successfully updated'}:{title: 'Post creation', message: 'Post successfully created'}
     method(editedPost, (post) => {
       postActions.hideEditModal()
-      afterPostUpsert(post)
+      if(afterPostUpsert){
+        afterPostUpsert(post)
+      }
       notify({ type: NotificationTypes.SUCCESS, ...notificatonDetails })
     })
   }
